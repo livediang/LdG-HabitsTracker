@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Email Verified";
+    Layout = "_AccountLayout";
+}
+
+<div class="wrapper">
+    <div class="verification-success">
+        <h2 class="text-success">✅ Successfully Verified!</h2>
+        <p>
+            Thank you for verifying your account.
+            You can now log in and start setting up your habits.
+        </p>
+
+        <div class="mt-3">
+            <a asp-controller="Account" asp-action="Login" class="btn-send">Log In</a>
+        </div>
+    </div>
+</div>

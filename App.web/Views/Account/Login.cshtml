@@ -1,0 +1,32 @@
+﻿@model App.web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Account Login";
+    Layout = "_AccountLayout";
+}
+
+<div class="wrapper">
+    <form asp-action="Login" method="post">
+        <h2>@ViewData["Title"]</h2>
+        <div class="input-field">
+            <input type="text" name="Email" required />
+            <label>Enter your Email</label>
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div class="input-field">
+            <input type="password" name="Password" required />
+            <label>Enter your Password</label>
+        </div>
+        <div class="forget">
+            <label class="remember">
+                <input type="checkbox" id="RememberMe" />
+                <p>Remember me</p>
+            </label>
+            <a asp-controller="Account" asp-action="LoginReset">Forgot Password?</a>
+        </div>
+        <div>
+            <input class="btn-send" type="submit" value="Log In" />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </form>
+</div>

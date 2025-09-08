@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_AccountLayout";
+}
+
+<div class="wrapper">
+    <div class="access-denied">
+        <h2>🚫 Access Denied</h2>
+        <p>Sorry, you don’t have permission to access this page.</p>
+        <p>Please log in with the correct account.</p>
+
+        <a asp-controller="Account" asp-action="Login" class="btn-send">Back to Login</a>
+    </div>
+</div>
