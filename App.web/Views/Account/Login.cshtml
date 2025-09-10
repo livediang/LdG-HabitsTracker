@@ -16,17 +16,23 @@
         <div class="input-field">
             <input type="password" name="Password" required />
             <label>Enter your Password</label>
+            <span asp-validation-for="Password"></span>
         </div>
         <div class="forget">
             <label class="remember">
                 <input type="checkbox" id="RememberMe" />
                 <p>Remember me</p>
             </label>
-            <a asp-controller="Account" asp-action="LoginReset">Forgot Password?</a>
         </div>
         <div>
             <input class="btn-send" type="submit" value="Log In" />
         </div>
         <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="urls">
+            <a asp-controller="Account" asp-action="Register">Don’t have an account? Sign up</a>
+        </div>
+        <div class="urls">
+            <a asp-controller="Account" asp-action="LoginReset">Forgot your password?</a>
+        </div>
     </form>
 </div>

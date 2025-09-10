@@ -11,7 +11,7 @@
 
         <div class="input-field">
             <input asp-for="FullName" required />
-            <label asp-for="FullName"></label>
+            <label asp-for="FullName"> Full Name User </label>
             <span asp-validation-for="FullName"></span>
         </div>
 
@@ -36,5 +36,9 @@
         <input class="btn-send" type="submit" value="Register" />
 
         <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="urls">
+            <a asp-controller="Account" asp-action="Login">Back to Login</a>
+        </div>
     </form>
 </div>

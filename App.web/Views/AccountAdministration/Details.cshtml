@@ -1,0 +1,62 @@
+﻿@model App.web.Models.User
+
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "_Layout";
+}
+
+<div class="wrapper">
+    <h2>@ViewData["Title"]</h2>
+
+    <div class="details-container">
+        <div class="detail-item">
+            <strong>User ID:</strong>
+            <p>@Model.UserId</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Email:</strong>
+            <p>@Model.Email</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Full Name:</strong>
+            <p>@Model.Profile?.FullName</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Active:</strong>
+            <p>@(Model.IsActive ? "Yes" : "No")</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Email Confirmed:</strong>
+            <p>@(Model.EmailConfirmed ? "Yes" : "No")</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Roles:</strong>
+            <ul>
+                @foreach (var role in Model.UserRoles.Select(ur => ur.Role.Name))
+                {
+                    <li>@role</li>
+                }
+            </ul>
+        </div>
+
+        <div class="detail-item">
+            <strong>Created At:</strong>
+            <p>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+        </div>
+
+        <div class="detail-item">
+            <strong>Updated At:</strong>
+            <p>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn-cancel">Back to List</a>
+        <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn-send">Edit</a>
+    </div>
+</div>

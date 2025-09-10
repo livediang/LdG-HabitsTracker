@@ -23,7 +23,7 @@ body {
     min-height: 100vh;
     width: 100%;
     padding: 0 10px;
-    background: linear-gradient(100deg, var(--primary-color) 0%, var(--secondary-color) 100%)
+    background: linear-gradient(16deg, var(--primary-color) 20%, var(--secondary-color) 80%)
 }
 
     body::before {
@@ -69,6 +69,10 @@ h2 {
     letter-spacing: 1px;
 }
 
+p {
+    color: #ccc;
+}
+
 .input-field {
     position: relative;
     border-bottom: 2px solid rgba(225, 225, 225, 0.4);
@@ -102,7 +106,7 @@ h2 {
             font-size: 0.8rem;
             top: 8px;
             transform: translateY(-150%);
-            color: var(--auxiliar-color);
+            color: var(--primary-color);
             transition: 0.2s ease all;
         }
 
@@ -120,22 +124,29 @@ h2 {
     }
 
         .forget label p {
-            margin-left: 8px;
-        }
-
-    .forget a {
-        color: var(--auxiliar-color);
-        text-decoration: none;
-    }
-
-        .forget a:hover {
-            font-weight: 600;
-            color: #000;
+            margin-left: 12px;
         }
 
 #remember {
     accent-color: var(--auxiliar-color);
 }
+
+.urls {
+    display: inline-block;
+    align-items: inherit;
+    margin: 8px 0 8px 0;
+    color: #fff;
+}
+
+    .urls a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+        .urls a:hover {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
 
 .btn-send {
     background-color: var(--auxiliar-color);
@@ -148,9 +159,41 @@ h2 {
     font-size: 16px;
     border: 2px solid transparent;
     transition: all 0.4s ease;
+    margin: 8px 0 16px 0;
 }
 
     .btn-send:hover {
         color: var(--auxiliar-color);
         background: rgba(225, 225, 225, 0.2);
     }
+
+/* Validación - Mensajes de error */
+
+.validation-summary-errors {
+    margin: 20px 0 20px 0;
+    padding: 8px 8px;
+    background-color: #B9CFDD;
+    color: #c82909;
+    font-weight: bold;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+    .validation-summary-errors ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none; 
+    }
+
+    .validation-summary-errors li {
+        margin-bottom: 4px;
+    }
+
+/* Errores específicos de campo */
+.field-validation-error {
+    color: #c82909;
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+}

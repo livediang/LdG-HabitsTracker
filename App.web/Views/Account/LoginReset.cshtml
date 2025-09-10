@@ -19,7 +19,11 @@
 
         @if (ViewBag.Message != null)
         {
-            <div style="margin-top:15px; color:blue;">@ViewBag.Message</div>
+            <div class="validation-summary-errors">@ViewBag.Message</div>
         }
+
+        <div class="urls">
+            <a asp-controller="Account" asp-action="Login">Back to Login</a>
+        </div>
     </form>
 </div>
