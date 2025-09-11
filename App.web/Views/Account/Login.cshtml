@@ -8,29 +8,36 @@
 <div class="wrapper">
     <form asp-action="Login" method="post">
         <h2>@ViewData["Title"]</h2>
+
         <div class="input-field">
-            <input type="text" name="Email" required />
-            <label>Enter your Email</label>
+            <input asp-for="Email" type="email" required />
+            <label asp-for="Email">Enter your Email</label>
             <span asp-validation-for="Email"></span>
         </div>
+
         <div class="input-field">
-            <input type="password" name="Password" required />
-            <label>Enter your Password</label>
+            <input asp-for="Password" type="password" required />
+            <label asp-for="Password">Enter your Password</label>
             <span asp-validation-for="Password"></span>
         </div>
+
         <div class="forget">
             <label class="remember">
                 <input type="checkbox" id="RememberMe" />
                 <p>Remember me</p>
             </label>
         </div>
+
         <div>
             <input class="btn-send" type="submit" value="Log In" />
         </div>
+
         <div asp-validation-summary="All" class="text-danger"></div>
+
         <div class="urls">
             <a asp-controller="Account" asp-action="Register">Don’t have an account? Sign up</a>
         </div>
+
         <div class="urls">
             <a asp-controller="Account" asp-action="LoginReset">Forgot your password?</a>
         </div>

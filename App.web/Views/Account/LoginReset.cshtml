@@ -12,15 +12,12 @@
 
         <div class="input-field">
             <input type="email" name="mailUser" id="mailUser" required />
-            <label for="mailUser">Email</label>
+            <label for="mailUser">Enter your Email</label>
         </div>
 
         <input class="btn-send" type="submit" value="Send Reset Link" />
 
-        @if (ViewBag.Message != null)
-        {
-            <div class="validation-summary-errors">@ViewBag.Message</div>
-        }
+        <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="urls">
             <a asp-controller="Account" asp-action="Login">Back to Login</a>
