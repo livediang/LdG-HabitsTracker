@@ -39,7 +39,7 @@ namespace App.web.Controllers
 
             if (user == null) return NotFound();
 
-            return View(user);
+            return PartialView("_UsersDetails", user);
         }
 
         // GET: Users/Edit/{id}
@@ -52,7 +52,7 @@ namespace App.web.Controllers
             if (user == null)
                 return NotFound();
 
-            return View(user);
+            return PartialView("_UsersEdit", user);
         }
 
         // POST: Users/Edit/{id}
@@ -68,7 +68,7 @@ namespace App.web.Controllers
                 {
                     _context.Update(model);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return PartialView("_UsersTable", nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -79,7 +79,7 @@ namespace App.web.Controllers
                 }
             }
 
-            return View(model);
+            return PartialView("_UsersEdit", model);
         }
 
         // GET: Users/Delete/{id}
@@ -92,7 +92,7 @@ namespace App.web.Controllers
             if (user == null)
                 return NotFound();
 
-            return View(user);
+            return PartialView("_UsersDelete", user);
         }
 
         // POST: Users/Delete/{id}
@@ -107,7 +107,7 @@ namespace App.web.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            return PartialView("_UsersTable", nameof(Index));
         }
     }
 }

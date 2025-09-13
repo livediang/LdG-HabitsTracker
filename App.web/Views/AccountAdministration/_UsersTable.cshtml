@@ -1,0 +1,29 @@
+﻿@model IEnumerable<App.web.Models.User>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Active</th>
+            <th>Roles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.Profile?.FullName</td>
+                <td>@user.IsActive</td>
+                <td>@string.Join(", ", user.UserRoles.Select(ur => ur.Role.Name))</td>
+                <td>
+                    <button class="btn btn-info btn-sm details-btn" data-id="@user.UserId">Details</button>
+                    <button class="btn btn-primary btn-sm edit-btn" data-id="@user.UserId">Edit</button>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="@user.UserId">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

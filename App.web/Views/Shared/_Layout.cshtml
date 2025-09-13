@@ -9,51 +9,66 @@
     <link rel="stylesheet" href="~/App.web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
+    <!-- Toggle -->
     <input type="checkbox" id="nav-collapse-toggle" class="nav-collapse-toggle" checked />
-    <header> 
-        <nav class="navbar box-shadow">
-            <div class="navbar-left container-fluid navbar-dark">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Habits Tracker App</a>
-                <label for="nav-collapse-toggle" class="nav-collapse-toggle-label"><i class="navbar-toggler-icon"></i></label>
+
+    <header>
+        <nav class="navbar" role="navigation" aria-label="Main Navigation">
+            <div class="navbar-left navbar-dark">
+                <!-- Botón accesible -->
+                <label for="nav-collapse-toggle"
+                       class="nav-collapse-toggle-label"
+                       aria-label="Toggle navigation">
+                    <span class="bi bi-list"></span>
+                </label>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-full">Habits Tracker App</span>
+                </a>
             </div>
             <div class="navbar-right container-fluid navbar-dark">
-                
+                <!-- Aquí podrías poner perfil, logout, etc. -->
             </div>
         </nav>
     </header>
+
     <div class="layout">
-        <div class="sidebar">
+        <aside class="sidebar" role="navigation" aria-label="Sidebar menu">
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-house fs-5 me-2"></i>
+                        <span class="link-text">Home</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <i class="bi bi-shield-lock fs-5 me-2"></i>
+                        <span class="link-text">Privacy</span>
+                    </a>
                 </li>
             </ul>
-        </div>
+        </aside>
 
-        <div class="main-content">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
-        </div>
-
+        <main role="main" class="main-content">
+            @RenderBody()
+        </main>
     </div>
 
     <footer class="footer">
-        <div class="container">
-            &copy; 2025 - Habits Tracker App - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="d-flex justify-content-between">
+            <span>&copy; 2025 - Habits Tracker App</span>
+            <nav aria-label="Footer menu">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </nav>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>

@@ -1,12 +1,7 @@
 ﻿@model App.web.Models.User
 
-@{
-    ViewData["Title"] = "Edit User";
-    Layout = "_Layout";
-}
-
 <div class="wrapper">
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" method="post" id="editForm">
         <input type="hidden" asp-for="UserId" />
 
         <h2>@ViewData["Title"]</h2>
@@ -29,7 +24,7 @@
         </div>
 
         <div class="mt-3">
-            <input class="btn-send" type="submit" value="Save Changes" />
+            <input class="btn btn-success" type="submit" value="Save Changes" />
             <a asp-action="Index" class="btn-cancel">Cancel</a>
         </div>
 
