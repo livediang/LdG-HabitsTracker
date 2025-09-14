@@ -1,20 +1,22 @@
 ﻿using App.web.Data;
 using App.web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.web.Controllers
 {
-    public class AccountAdministrationController : Controller
+    public class AdministrationController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public AccountAdministrationController(ApplicationDbContext context)
+        public AdministrationController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: Users
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users

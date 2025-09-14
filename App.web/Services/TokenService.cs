@@ -1,29 +1,66 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using App.web.Services.Interfaces;
+using System.Text.Json;
 using System.Text;
 
 namespace App.web.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
-        private readonly IDataProtector _protector;
-
-        public TokenService(IDataProtectionProvider provider)
-        {
-            _protector = provider.CreateProtector("EmailConfirmation");
-        }
-
         public string GenerateEmailConfirmationToken(Guid userId, string email)
         {
-            var data = $"{userId}|{email}|{DateTime.UtcNow}";
-            return _protector.Protect(data);
+            var payload = new { userId, email, type = "confirm", exp = DateTime.UtcNow.AddHours(1) };
+            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(payload)));
         }
 
-        public (Guid userId, string email, DateTime created) ValidateToken(string token)
+        public string GeneratePasswordResetToken(Guid userId, string email)
         {
-            var unprotected = _protector.Unprotect(token);
-            var parts = unprotected.Split('|');
+            var payload = new { userId, email, type = "reset", exp = DateTime.UtcNow.AddHours(1) };
+            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(payload)));
+        }
 
-            return (Guid.Parse(parts[0]), parts[1], DateTime.Parse(parts[2]));
+        public TokenResult ValidateEmailConfirmationToken(string token)
+        {
+            try
+            {
+                var decoded = JsonSerializer.Deserialize<TokenPayload>(Decode(token));
+                if (decoded == null || decoded.type != "confirm" || decoded.exp < DateTime.UtcNow)
+                    return new TokenResult(false, Guid.Empty, "");
+                return new TokenResult(true, decoded.userId, decoded.email);
+            }
+            catch
+            {
+                return new TokenResult(false, Guid.Empty, "");
+            }
+        }
+
+        public TokenResult ValidatePasswordResetToken(string token)
+        {
+            try
+            {
+                var decoded = JsonSerializer.Deserialize<TokenPayload>(Decode(token));
+                if (decoded == null || decoded.type != "reset" || decoded.exp < DateTime.UtcNow)
+                    return new TokenResult(false, Guid.Empty, "");
+                return new TokenResult(true, decoded.userId, decoded.email);
+            }
+            catch
+            {
+                return new TokenResult(false, Guid.Empty, "");
+            }
+        }
+
+        private string Decode(string token)
+        {
+            var bytes = Convert.FromBase64String(token);
+            return System.Text.Encoding.UTF8.GetString(bytes);
+        }
+
+        private class TokenPayload
+        {
+            public Guid userId { get; set; }
+            public string email { get; set; }
+            public string type { get; set; }
+            public DateTime exp { get; set; }
         }
     }
 }

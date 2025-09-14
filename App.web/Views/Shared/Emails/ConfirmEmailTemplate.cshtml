@@ -1,0 +1,19 @@
+﻿@model dynamic
+@{
+    string fullName = Model.FullName;
+    string confirmUrl = Model.ConfirmUrl;
+}
+
+<h2>Welcome, @fullName!</h2>
+<p>Thank you for registering with <strong>Habits Tracker</strong>.</p>
+<p>Please confirm your email address by clicking the button below:</p>
+<p>
+    <a href='@confirmUrl' 
+       style='display:inline-block;padding:10px 20px;
+              background-color:#4CAF50;color:white;
+              text-decoration:none;border-radius:5px;'>
+        Confirm Email
+    </a>
+</p>
+<p>If you didn’t create this account, you can safely ignore this email.</p>
+<p>– The Habits Tracker Team</p>

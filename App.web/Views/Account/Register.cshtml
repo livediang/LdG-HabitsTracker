@@ -6,39 +6,89 @@
 }
 
 <div class="wrapper">
-    <form asp-action="Register" method="post">
-        <h2>@ViewData["Title"]</h2>
+    <form asp-action="Register" method="post" id="registerForm" novalidate>
+        <h2 class="form-title">@ViewData["Title"]</h2>
 
         <div class="input-field">
-            <input asp-for="FullName" required />
-            <label asp-for="FullName">Enter your Full Name</label>
-            <span asp-validation-for="FullName"></span>
+            <input asp-for="FullName" required placeholder="Enter your full name" />
+            <label asp-for="FullName"></label>
+            <span asp-validation-for="FullName" class="validation-error"></span>
         </div>
 
         <div class="input-field">
-            <input asp-for="Email" type="email" required />
-            <label asp-for="Email">Enter your Email</label>
-            <span asp-validation-for="Email"></span>
+            <input asp-for="Email" type="email" required placeholder="example@email.com" />
+            <label asp-for="Email"></label>
+            <span asp-validation-for="Email" class="validation-error"></span>
         </div>
 
         <div class="input-field">
-            <input asp-for="Password" type="password" required />
-            <label asp-for="Password">Enter your Password</label>
-            <span asp-validation-for="Password"></span>
+            <input asp-for="Password" type="password" required placeholder="********" />
+            <label asp-for="Password"></label>
+            <span asp-validation-for="Password" class="validation-error"></span>
         </div>
 
         <div class="input-field">
-            <input asp-for="ConfirmPassword" type="password" required />
-            <label asp-for="ConfirmPassword">Confirm Password</label>
-            <span asp-validation-for="ConfirmPassword"></span>
+            <input asp-for="ConfirmPassword" type="password" required placeholder="********" />
+            <label asp-for="ConfirmPassword"></label>
+            <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
         </div>
 
-        <input class="btn-send" type="submit" value="Register" />
+        <button class="btn-send" type="submit">Register</button>
 
-        <div asp-validation-summary="All" class="text-danger"></div>
+        <div asp-validation-summary="All" class="validation-summary"></div>
 
         <div class="urls">
             <a asp-controller="Account" asp-action="Login">Back to Login</a>
         </div>
     </form>
 </div>
+
+<!-- Modal mensajes -->
+<div class="modal fade" id="messageModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">Message</h5>
+            </div>
+            <div class="modal-body" id="modalBody">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="btnContinuar" data-bs-dismiss="modal">Continue</button>
+                <button type="button" class="btn btn-success" id="btnReintentar">Retry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            @if (TempData["Message"] != null)
+            {
+                    <text>
+                        const modalTitle = document.getElementById("modalTitle");
+                        const modalBody = document.getElementById("modalBody");
+
+                        modalTitle.innerText = "@(TempData["MessageType"] ?? "Message")";
+                        modalBody.innerText = "@TempData["Message"]";
+
+                        const modal = new bootstrap.Modal(document.getElementById("messageModal"));
+                        modal.show();
+
+                        document.getElementById("btnContinuar").onclick = () => {
+                            if ("@TempData["MessageType"]" === "success") {
+                                window.location.href = "/Account/Login";
+                            }
+                        };
+
+                        document.getElementById("btnReintentar").onclick = () => {
+                            document.getElementById("registerForm").submit();
+                        };
+                    </text>
+            }
+        });
+    </script>
+}

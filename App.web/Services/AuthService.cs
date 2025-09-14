@@ -1,31 +1,28 @@
 ﻿using App.web.Data;
 using App.web.Models;
-using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+using App.web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace App.web.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly TokenService _tokenService;
-        private readonly EmailService _emailService;
+        private readonly IUserService _userService;
 
-        public AuthService(ApplicationDbContext context, TokenService tokenService, EmailService emailService)
+        public AuthService(IUserService userService)
         {
-            _context = context;
-            _tokenService = tokenService;
-            _emailService = emailService;
+            _userService = userService;
         }
 
-        public async Task<User> RegisterAsync(string fullName, string email, string password)
+        public async Task<AuthResult> RegisterAsync(string fullName, string email, string password)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == email))
-                throw new Exception("This email has already registered.");
+            var existing = await _userService.FindByEmail(email);
+            if (existing != null)
+                return new AuthResult { Success = false, Message = "Email already registered." };
 
             var user = new User
             {
@@ -41,7 +38,7 @@ namespace App.web.Services
                 EmailConfirmed = false
             };
 
-            _context.Users.Add(user);
+            await _userService.AddUser(user);
 
             var profile = new UserProfile
             {
@@ -54,33 +51,33 @@ namespace App.web.Services
                 PreferencesJson = ""
             };
 
-            _context.UserProfiles.Add(profile);
+            await _userService.AddProfile(profile);
 
-            await _context.SaveChangesAsync();
-
-            return user;
+            return await Task.FromResult(new AuthResult
+            {
+                Success = true,
+                User = user,
+                Message = "Registration successful! Please confirm your email."
+            });
         }
 
         public async Task<AuthResult> LoginAsync(string email, string password)
         {
-            var user = _context.Users
-                .Include(u => u.Profile)
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
-                .FirstOrDefault(u => u.Email == email);
-
+            var user = await _userService.FindByEmail(email);
+            
             if (user == null)
-                return new AuthResult { Success = false, Message = "Mail user or Password incorrect." };
+                return new AuthResult { Success = false, Message = "User not found" };
 
             if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
             {
                 return new AuthResult
                 {
-                    Success = false, Message = $"Your account is bloqued until {user.LockoutEnd.Value}."
+                    Success = false,
+                    Message = $"Your account is bloqued until {user.LockoutEnd.Value}."
                 };
             }
 
-            if (!VerifyPassword(password, user.PasswordHash))
+            if (user.PasswordHash != HashPassword(password))
             {
                 user.FailedLoginAttempts++;
 
@@ -89,21 +86,26 @@ namespace App.web.Services
                     user.LockoutEnd = DateTime.UtcNow.AddMinutes(15); // shell 15 min
                 }
 
-                _context.SaveChanges();
+                await _userService.UpdateAttempts(user);
 
-                return new AuthResult { Success = false, Message = "Mail user or Password incorrect." };
+                return new AuthResult { Success = false, Message = "Invalid password" };
             }
 
             if (!user.EmailConfirmed)
-                return new AuthResult { Success = false, Message = "Please confirm your mail." };
+                return new AuthResult { Success = false, Message = "Email not confirmed" };
 
-            // Reset 
-            user.FailedLoginAttempts = 0;
-            user.LockoutEnd = null;
+            return await Task.FromResult(new AuthResult
+            {
+                Success = true,
+                User = user
+            });
+        }
 
-            _context.SaveChanges();
-
-            return new AuthResult { Success = true, User = user };
+        public async Task UpdatePasswordAsync(User user, string newPassword)
+        {
+            user.PasswordHash = HashPassword(newPassword);
+            await _userService.UpdateUser(user);
+            await Task.CompletedTask;
         }
 
         public string HashPassword(string password)
@@ -111,11 +113,6 @@ namespace App.web.Services
             using var sha = SHA256.Create();
             var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
             return Convert.ToBase64String(bytes);
-        }
-
-        private bool VerifyPassword(string password, string hash)
-        {
-            return HashPassword(password) == hash;
         }
     }
 }

@@ -1,223 +1,158 @@
-﻿using App.web.Data;
-using App.web.Models;
-using App.web.Services;
+﻿using App.web.Services.Interfaces;
 using App.web.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Mail;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace App.web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly AuthService _authService;
-        private readonly TokenService _tokenService;
-        private readonly EmailService _emailService;
+        private readonly IAuthService _authService;
+        private readonly IUserService _userService;
+        private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
 
-        public AccountController(ApplicationDbContext context, AuthService authService, TokenService tokenService, EmailService emailService)
+        public AccountController(IAuthService authService, IUserService userService, ITokenService tokenService, IEmailService emailService)
         {
-            _context = context;
             _authService = authService;
+            _userService = userService;
             _tokenService = tokenService;
             _emailService = emailService;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        public IActionResult Register() => View();
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    var user = await _authService.RegisterAsync(model.FullName, model.Email, model.Password);
-
-                    var token = _tokenService.GenerateEmailConfirmationToken(user.UserId, user.Email);
-
-                    var encodedToken = System.Web.HttpUtility.UrlEncode(token);
-
-                    var confirmUrl = Url.Action("ConfirmEmail", "Account", new { token = encodedToken }, Request.Scheme);
-
-                    await _emailService.SendAsync(
-                        user.Email,
-                        "Confirm your account",
-                        $@"
-                            <h2>Welcome, {model.FullName}!</h2>
-                            <p>Thank you for registering with <strong>Habits Tracker</strong>.</p>
-                            <p>Please confirm your email address by clicking the button below:</p>
-                            <p>
-                                <a href='{confirmUrl}' 
-                                   style='display:inline-block;padding:10px 20px;
-                                          background-color:#4CAF50;color:white;
-                                          text-decoration:none;border-radius:5px;'>
-                                    Confirm Email
-                                </a>
-                            </p>
-                            <p>If you didn’t create this account, you can safely ignore this email.</p>
-                            <p>– The Habits Tracker Team</p>
-                        "
-                    );
-
-                    ViewBag.Message = "A link has been sent to your email to confirm your email account.";
-
-                    return RedirectToAction("Login");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
+                TempData["Message"] = "Please fix the highlighted errors.";
+                TempData["MessageType"] = "error";
+                return View(model);
             }
-            return View(model);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ConfirmEmail(string token)
-        {
-            if (string.IsNullOrEmpty(token)) return BadRequest("Required Token.");
 
             try
             {
-                var decodedToken = System.Web.HttpUtility.UrlDecode(token);
+                var register = await _authService.RegisterAsync(model.FullName, model.Email, model.Password);
 
-                var (userId, email, created) = _tokenService.ValidateToken(decodedToken);
+                if (register.Success != false)
+                {
+                    var token = _tokenService.GenerateEmailConfirmationToken(register.User.UserId, register.User.Email);
+                    var encodedToken = System.Net.WebUtility.UrlEncode(token);
 
-                if (created.AddHours(24) < DateTime.UtcNow) return BadRequest("Expired Token.");
+                    var confirmUrl = Url.Action("ConfirmEmail", "Account", new { token = encodedToken }, Request.Scheme);
+                    await _emailService.SendConfirmEmailAsync(model.Email, model.FullName, confirmUrl);
 
-                var user = _context.Users.FirstOrDefault(u => u.UserId == userId && u.Email == email);
-                if (user == null) return BadRequest("Invalid Token.");
-
-                user.EmailConfirmed = true;
-                _context.SaveChanges();
-
-                return View("ConfirmEmailSuccess");
+                    TempData["Message"] = register.Message;
+                    TempData["MessageType"] = "success";
+                    return View(model);
+                }
+                TempData["Message"] = register.Message;
+                TempData["MessageType"] = "error";
+                return View(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Invalid Token.");
+                TempData["Message"] = ex;
+                TempData["MessageType"] = "error";
+                return View(model);
             }
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login()
+        public async Task<IActionResult> ConfirmEmail(string token)
         {
-            return View();
+            if (string.IsNullOrEmpty(token)) return BadRequest("InvalidToken.");
+
+            var decodedToken = System.Net.WebUtility.UrlDecode(token);
+            var result = _tokenService.ValidateEmailConfirmationToken(decodedToken);
+            if (!result.IsValid) return View("InvalidToken");
+
+            var user = await _userService.FindByIdAndEmail(result.UserId, result.Email);
+            if (user == null) return View("InvalidToken");
+
+            await _userService.ConfirmEmail(user);
+            return View("ConfirmEmailSuccess");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login() => View();
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await _authService.LoginAsync(model.Email, model.Password);
+            if (!result.Success)
             {
-                var result = await _authService.LoginAsync(model.Email, model.Password);
+                ModelState.AddModelError("", result.Message);
+                return View(model);
+            }
 
-                if (!result.Success)
-                {
-                    ModelState.AddModelError("", result.Message);
-                    return View(model);
-                }
+            var user = result.User;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("FullName", user.Profile?.FullName ?? "")
+            };
 
-                var user = result.User;
+            foreach (var role in user.UserRoles?
+                .Where(r => r?.Role?.Name != null)
+                .Select(r => r.Role.Name) ?? Enumerable.Empty<string>())
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
-                // Cookie Auth Scheme Claims
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email)
-                };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                if (user.Profile != null)
-                {
-                    claims.Add(new Claim("FullName", user.Profile.FullName));
-                }
-
-                foreach (var role in user.UserRoles.Select(ur => ur.Role.Name))
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                // Config cookie
-                var authProperties = new AuthenticationProperties
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                new AuthenticationProperties
                 {
                     IsPersistent = model.RememberMe,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
-                };
+                });
 
-                // In this point... build the cookie
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties
-                );
-
-                return RedirectToAction("Index", "Home");
-            }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult LoginReset() => View();
+        public IActionResult ForgotPassword() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginReset(string mailUser)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            var userReset = _context.Users.FirstOrDefault(u => u.Email == mailUser);
-            if (userReset == null)
+            var user = await _userService.FindByEmail(model.Email);
+            if (user == null)
             {
-                ViewBag.Message = "Email not register.";
+                TempData["Message"] = "Email not registered.";
                 return View();
             }
 
-            var token = _tokenService.GenerateEmailConfirmationToken(userReset.UserId, userReset.Email);
+            var token = _tokenService.GeneratePasswordResetToken(user.UserId, user.Email);
+            var encodedToken = System.Net.WebUtility.UrlEncode(token);
+            var resetUrl = Url.Action("ResetPassword", "Account", new { token = encodedToken }, Request.Scheme);
 
-            var encodedToken = System.Web.HttpUtility.UrlEncode(token);
+            await _emailService.SendPasswordResetAsync(user.Email, resetUrl);
 
-            string resetLink = Url.Action("ResetPassword", "Account", new { token = encodedToken }, Request.Scheme);
-
-            await _emailService.SendAsync(
-                userReset.Email,
-                "Reset your Habits Tracker password",
-                $@"
-                    <h2>Password Reset Request</h2>
-                    <p>Hello,</p>
-                    <p>We received a request to reset the password for your <strong>Habits Tracker</strong> account.</p>
-                    <p>Please click the button below to set a new password:</p>
-                    <p>
-                        <a href='{resetLink}'
-                           style='display:inline-block;padding:10px 20px;
-                                  background-color:#007BFF;color:white;
-                                  text-decoration:none;border-radius:5px;'>
-                            Reset Password
-                        </a>
-                    </p>
-                    <p>If you did not request this, you can safely ignore this email.</p>
-                    <p>– The Habits Tracker Team</p>
-                "
-            );
-
-            ViewBag.Message = "A link has been sent to your email to reset your password.";
+            TempData["Message"] = "Check your email to reset your password.";
             return View();
         }
 
@@ -225,11 +160,9 @@ namespace App.web.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string token)
         {
-            if (string.IsNullOrEmpty(token))
-                return BadRequest("Invalid password reset token.");
+            if (string.IsNullOrEmpty(token)) return View("InvalidToken");
 
-            var model = new ResetPasswordViewModel { Token = token };
-            return View(model);
+            return View(new ResetPasswordViewModel { Token = token });
         }
 
         [HttpPost]
@@ -237,43 +170,29 @@ namespace App.web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
-            try
-            {
-                var (userId, email, created) = _tokenService.ValidateToken(model.Token);
+            var decodedToken = System.Net.WebUtility.UrlDecode(model.Token);
+            var result = _tokenService.ValidatePasswordResetToken(decodedToken);
+            if (!result.IsValid) return View("InvalidToken");
 
-                var user = _context.Users.FirstOrDefault(u => u.UserId == userId && u.Email == email);
-                if (user == null)
-                    return BadRequest("Invalid token.");
+            var user = await _userService.FindByIdAndEmail(result.UserId, result.Email);
+            if (user == null) return View("InvalidToken");
 
-                user.PasswordHash = _authService.HashPassword(model.NewPassword);
-                user.UpdatedAt = DateTime.UtcNow;
+            await _authService.UpdatePasswordAsync(user, model.NewPassword);
 
-                _context.SaveChanges();
-
-                TempData["Message"] = "Your password has been reset successfully. Please login.";
-                return RedirectToAction("Login");
-            }
-            catch
-            {
-                return BadRequest("Invalid or expired token.");
-            }
+            return View("ResetPasswordSuccess");
         }
 
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+        public IActionResult AccessDenied() => View();
     }
 }
