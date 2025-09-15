@@ -6,40 +6,41 @@
 }
 
 <div class="wrapper">
-    <form asp-action="Login" method="post" id="loginForm" novalidate>
-        <h2 class="form-title">@ViewData["Title"]</h2>
+    <div class="account-box">
+        <form asp-action="Login" method="post" id="loginForm" novalidate>
+            <h2 class="form-title">@ViewData["Title"]</h2>
 
-        <div class="input-field">
-            <input asp-for="Email" type="email" required placeholder="example@email.com" />
-            <label asp-for="Email"></label>
-            <span asp-validation-for="Email" class="validation-error"></span>
-        </div>
+            <div class="input-field">
+                <input asp-for="Email" type="email" required placeholder="example@email.com" />
+                <label asp-for="Email"></label>
+            </div>
 
-        <div class="input-field">
-            <input asp-for="Password" type="password" required placeholder="********" />
-            <label asp-for="Password"></label>
-            <span asp-validation-for="Password" class="validation-error"></span>
-        </div>
+            <div class="input-field">
+                <input asp-for="Password" type="password" required placeholder="********" />
+                <label asp-for="Password"></label>
+            </div>
 
-        <div class="forget">
-            <label class="remember">
-                <input asp-for="RememberMe" type="checkbox" />
-                <span>Remember me</span>
-            </label>
-        </div>
+            <div class="forget">
+                <label class="remember">
+                    <input asp-for="RememberMe" type="checkbox" />
+                    <span>Remember me</span>
+                </label>
+            </div>
 
-        <button class="btn-send" type="submit">Log In</button>
+            <button class="btn-send" type="submit">Log In</button>
 
-        <div asp-validation-summary="All" class="validation-summary"></div>
+            <div asp-validation-summary="All" class="validation-summary"></div>
 
-        <div class="urls">
-            <a asp-controller="Account" asp-action="Register">Don’t have an account? Sign up</a>
-        </div>
+            <div class="urls">
+                <a asp-controller="Account" asp-action="Register">Don’t have an account? Sign up</a>
+            </div>
 
-        <div class="urls">
-            <a asp-controller="Account" asp-action="ForgotPassword">Forgot your password?</a>
-        </div>
-    </form>
+            <div class="urls">
+                <a asp-controller="Account" asp-action="ForgotPassword">Forgot your password?</a>
+            </div>
+        </form>
+    </div>
+    <div class="account-mark"></div>
 </div>
 
 <!-- Modal mensajes -->

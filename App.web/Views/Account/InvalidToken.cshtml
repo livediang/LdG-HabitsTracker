@@ -4,19 +4,22 @@
 }
 
 <div class="wrapper">
-    <div class="system-message text-center">
-        <div class="icon mb-3">
-            <span class="display-1">❌</span>
-        </div>
+    <div class="account-mark"></div>
+    <div class="account-box">
+        <div class="system-message text-center">
+            <div class="icon mb-3">
+                <span class="display-1">❌</span>
+            </div>
 
-        <h2 class="message-title text-danger">Invalid Token</h2>
-        <p class="message-body">
-            The token provided is invalid or has expired.<br />
-            Please request a new password reset or verification link.
-        </p>
+            <h2 class="message-title text-danger">Invalid Token</h2>
+            <p class="message-body">
+                The token provided is invalid or has expired.<br />
+                Please request a new password reset or verification link.
+            </p>
 
-        <div class="mt-4">
-            <a asp-controller="Account" asp-action="ForgotPassword" class="btn-send">Request New Link</a>
+            <div class="mt-4">
+                <a asp-controller="Account" asp-action="ForgotPassword" class="btn-send">Request New Link</a>
+            </div>
         </div>
     </div>
 </div>

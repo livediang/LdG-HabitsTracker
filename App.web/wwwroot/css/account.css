@@ -1,13 +1,11 @@
 ﻿:root {
-    --primary-color: #0D2744;
-    --secondary-color: #53728A;
-    --background-color: #B9CFDD;
-    --auxiliar-color: #C82909;
-    --text-color: #0D2744;
+    --primary-color: #292D31; /*black*/
+    --secondary-color: #9E8123; /*red*/
+    --background-color: #DAE0EC; /*white*/
+    --auxiliar-color: #9E8123; /*gold*/
+    --text-color: #292D31; /*white*/
     --font-main: 'Segoe UI', sans-serif;
 }
-
-/* == Modelo Basic == */
 
 * {
     margin: 0;
@@ -20,102 +18,84 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
-    padding: 0 10px;
-    background: linear-gradient(16deg, var(--primary-color) 20%, var(--secondary-color) 80%)
+    background: linear-gradient(160deg, var(--primary-color) 20%, var(--background-color) 200%)
 }
-
-    body::before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-position: center;
-        background-size: cover;
-        z-index: -1;
-    }
 
 /* Contenedor */
 
 .wrapper {
-    width: 560px;
-    border-radius: 8px;
-    padding: 40px;
+    display: flex;
+    width: 1200px;
     text-align: center;
-    background: rgba(225, 225, 225, 0.1);
-    border: 1px solid rgba(225, 225, 225, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.37);
-    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
     .wrapper:hover {
-        box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        transition: all 0.4s ease;
     }
 
-/* Formulario */
+/* Account Box */
 
-form {
-    display: flex;
-    flex-direction: column;
+.account-box {
+    background: var(--background-color);
+    color: var(--text-color);
+    flex: 1;
+    padding: 80px 80px;
 }
 
-h2 {
-    font-size: 1.6rem;
-    margin-bottom: 20px;
-    color: #fff;
-    letter-spacing: 1px;
-}
-
-p {
-    color: #ccc;
-}
-
-.input-field {
-    position: relative;
-    border-bottom: 2px solid rgba(225, 225, 225, 0.4);
-    margin: 16px 0;
-}
-
-    .input-field label {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-        color: #fff;
-        font-size: 16px;
-        pointer-events: none;
-        transition: 0.4s ease;
+    .account-box h2 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
     }
 
-    .input-field input {
-        width: 100%;
-        height: 40px;
-        background: transparent;
-        border: none;
-        outline: none;
-        font-size: 16px;
-        color: #fff;
-        padding: 0 8px;
+    .account-box p {
+        font-size: 1.2rem;
     }
 
-        .input-field input:focus + label,
-        .input-field input:valid + label {
-            font-size: 0.8rem;
-            top: 8px;
-            transform: translateY(-150%);
-            color: var(--primary-color);
-            transition: 0.2s ease all;
+    .account-box .input-field {
+        position: relative;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        margin: 16px 0;
+    }
+
+        .account-box .input-field label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-size: 16px;
+            pointer-events: none;
+            transition: 0.4s ease;
         }
+
+        .account-box .input-field input {
+            width: 100%;
+            height: 40px;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 0 8px;
+            text-align: end;
+        }
+
+    .account-box input:focus label, .account-box input:valid label {
+        font-size: 0.8rem;
+        top: 8px;
+        transform: translateY(-150%);
+        color: var(--text-color);
+        transition: 0.2s ease all;
+    }
 
 .forget {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 24px 0 16px 0;
-    color: #fff;
+    margin: 32px 0 16px 0;
 }
 
     .forget label {
@@ -124,36 +104,19 @@ p {
     }
 
         .forget label p {
-            margin-left: 12px;
+            margin-left: 16px;
         }
 
 #remember {
-    accent-color: var(--auxiliar-color);
+    accent-color: var(--text-color);
 }
-
-.urls {
-    display: inline-block;
-    align-items: inherit;
-    margin: 8px 0 8px 0;
-    color: #fff;
-}
-
-    .urls a {
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-
-        .urls a:hover {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
 
 .btn-send {
-    background-color: var(--auxiliar-color);
-    color: #fff;
+    background-color: var(--primary-color);
+    color: var(--background-color);
     width: 100%;
-    font-weight: 600;
-    padding: 12px 48px;
+    font-weight: 800;
+    padding: 16px 32px;
     cursor: pointer;
     border-radius: 2px;
     font-size: 16px;
@@ -163,37 +126,60 @@ p {
 }
 
     .btn-send:hover {
-        color: var(--auxiliar-color);
-        background: rgba(225, 225, 225, 0.2);
+        background: var(--secondary-color);
+        color: var(--background-color);
     }
 
-/* Validación - Mensajes de error */
+.urls {
+    display: inline-block;
+    align-items: inherit;
+    margin: 8px 16px 8px 16px;
+    color: #fff;
+}
+
+    .urls a {
+        color: var(--text-color);
+        text-decoration: none;
+    }
+
+        .urls a:hover {
+            font-weight: 600;
+            color: var(--text-color);
+        }
 
 .validation-summary-errors {
     margin: 20px 0 20px 0;
     padding: 8px 8px;
-    background-color: #B9CFDD;
-    color: #c82909;
+    background-color: var(--primary-color);
+    color: var(--background-color);
     font-weight: bold;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
     .validation-summary-errors ul {
         margin: 0;
         padding: 0;
-        list-style-type: none; 
+        list-style-type: none;
     }
 
     .validation-summary-errors li {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
 
-/* Errores específicos de campo */
 .field-validation-error {
-    color: #c82909;
+    color: var(--secondary-color);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px;
     margin-top: 4px;
     display: block;
+}
+
+.account-mark {
+    flex: 1;
+    padding: 80px 80px;
+    background: url('https://i.pinimg.com/1200x/17/e2/2a/17e22a66e321ee1b35d4887375b3c8e7.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
 }

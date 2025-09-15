@@ -4,19 +4,22 @@
 }
 
 <div class="wrapper">
-    <div class="system-message text-center">
-        <div class="icon mb-3">
-            <span class="display-1">🚫</span>
-        </div>
+    <div class="account-mark"></div>
+    <div class="account-box">
+        <div class="system-message text-center">
+            <div class="icon mb-3">
+                <span class="display-1">🚫</span>
+            </div>
 
-        <h2 class="message-title text-danger">Access Denied</h2>
-        <p class="message-body">
-            You don’t have permission to access this page.<br />
-            Please log in with the correct account.
-        </p>
+            <h2 class="message-title text-danger">Access Denied</h2>
+            <p class="message-body">
+                You don’t have permission to access this page.<br />
+                Please log in with the correct account.
+            </p>
 
-        <div class="mt-4">
-            <a asp-controller="Account" asp-action="Login" class="btn-send">Back to Login</a>
+            <div class="mt-4">
+                <a asp-controller="Account" asp-action="Login" class="btn-send">Back to Login</a>
+            </div>
         </div>
     </div>
 </div>
