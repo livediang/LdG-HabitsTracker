@@ -3,7 +3,7 @@
     --secondary-color: #9E8123; /*gold*/
     --background-color: #DAE0EC; /*white*/
     --auxiliar-color: #9E8123; /*gold*/
-    --text-color: #292D31; /*white*/
+    --text-color: #292D31; /*black*/
     --font-main: 'Segoe UI', sans-serif;
 }
 
@@ -187,3 +187,76 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
 }
+
+/* Modal Box */
+
+.custom-modal {
+    width: 100%;
+    background: var(--background-color);
+    color: var(--text-color);
+    border-radius: 12px;
+    border: none;
+    box-shadow: none;
+    height: 40vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .custom-modal .modal-header {
+        background: var(--primary-color);
+        color: var(--background-color);
+        padding: 1.5rem;
+        border-bottom: 2px solid var(--secondary-color);
+        text-align: center;
+    }
+
+    .custom-modal .modal-title {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+
+    .custom-modal .modal-body {
+        flex: 1;
+        padding: 2rem;
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: var(--secondary-color);
+    }
+
+    .custom-modal .modal-footer {
+        background: var(--primary-color);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: center;
+    }
+
+.btn-custom {
+    background: var(--background-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn-custom:hover {
+        background: var(--background-color);
+        transform: scale(1.05);
+    }
+
+    .btn-custom.btn-secondary {
+        background: transparent;
+        border: 2px solid var(--background-color);
+        color: var(--background-color);
+    }
+
+        .btn-custom.btn-secondary:hover {
+            background: var(--background-color);
+            color: var(--text-color);
+        }

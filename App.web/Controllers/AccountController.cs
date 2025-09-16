@@ -143,6 +143,7 @@ namespace App.web.Controllers
             if (user == null)
             {
                 TempData["Message"] = "Email not registered.";
+                TempData["MessageType"] = "error";
                 return View();
             }
 
@@ -153,6 +154,7 @@ namespace App.web.Controllers
             await _emailService.SendPasswordResetAsync(user.Email, resetUrl);
 
             TempData["Message"] = "Check your email to reset your password.";
+            TempData["MessageType"] = "success";
             return View();
         }
 

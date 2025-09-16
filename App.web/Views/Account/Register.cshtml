@@ -44,17 +44,14 @@
 
 <!-- Modal mensajes -->
 <div class="modal fade" id="messageModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-3 shadow">
-            <div class="modal-header bg-primary text-white">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalTitle">Message</h5>
             </div>
-            <div class="modal-body" id="modalBody">
-                ...
-            </div>
+            <div class="modal-body" id="modalBody">...</div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" id="btnContinuar" data-bs-dismiss="modal">Continue</button>
-                <button type="button" class="btn btn-success" id="btnReintentar">Retry</button>
+                <button type="button" class="btn-custom btn-secondary" id="btnContinuar" data-bs-dismiss="modal">Continue</button>
             </div>
         </div>
     </div>
@@ -62,7 +59,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             @if (TempData["Message"] != null)
@@ -81,10 +77,6 @@
                             if ("@TempData["MessageType"]" === "success") {
                                 window.location.href = "/Account/Login";
                             }
-                        };
-
-                        document.getElementById("btnReintentar").onclick = () => {
-                            document.getElementById("registerForm").submit();
                         };
                     </text>
             }
