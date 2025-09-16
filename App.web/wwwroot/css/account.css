@@ -1,6 +1,6 @@
 ﻿:root {
     --primary-color: #292D31; /*black*/
-    --secondary-color: #9E8123; /*red*/
+    --secondary-color: #9E8123; /*gold*/
     --background-color: #DAE0EC; /*white*/
     --auxiliar-color: #9E8123; /*gold*/
     --text-color: #292D31; /*white*/
@@ -103,8 +103,8 @@ body {
         align-items: center;
     }
 
-        .forget label p {
-            margin-left: 16px;
+        .forget label span {
+            margin-left: 16px !important;
         }
 
 #remember {
@@ -129,6 +129,10 @@ body {
         background: var(--secondary-color);
         color: var(--background-color);
     }
+
+.btn-send {
+    text-decoration: none;
+}
 
 .urls {
     display: inline-block;
