@@ -1,34 +1,25 @@
 ﻿@model App.web.Models.User
 
-<div class="wrapper">
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="user-details">
     <h2>@ViewData["Title"]</h2>
 
-    <div class="details-container">
+    <div class="details-grid">
         <div class="detail-item">
-            <strong>User ID:</strong>
-            <p>@Model.UserId</p>
+            <strong>Full Name:</strong> @Model.Profile?.FullName
         </div>
-
         <div class="detail-item">
-            <strong>Email:</strong>
-            <p>@Model.Email</p>
+            <strong>Email:</strong> @Model.Email
         </div>
-
         <div class="detail-item">
-            <strong>Full Name:</strong>
-            <p>@Model.Profile?.FullName</p>
+            <strong>Email Confirmed:</strong> @(Model.EmailConfirmed ? "✅ Yes" : "❌ No")
         </div>
-
         <div class="detail-item">
-            <strong>Active:</strong>
-            <p>@(Model.IsActive ? "Yes" : "No")</p>
+            <strong>Active:</strong> @(Model.IsActive ? "✅ Yes" : "❌ No")
         </div>
-
-        <div class="detail-item">
-            <strong>Email Confirmed:</strong>
-            <p>@(Model.EmailConfirmed ? "Yes" : "No")</p>
-        </div>
-
         <div class="detail-item">
             <strong>Roles:</strong>
             <ul>
@@ -38,20 +29,22 @@
                 }
             </ul>
         </div>
-
         <div class="detail-item">
-            <strong>Created At:</strong>
-            <p>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+            <strong>Created At:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
         </div>
-
         <div class="detail-item">
-            <strong>Updated At:</strong>
-            <p>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+            <strong>Updated At:</strong> @Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")
+        </div>
+        <div class="detail-item">
+            <strong>Time Zone:</strong> @Model.Profile?.TimeZone
+        </div>
+        <div class="detail-item">
+            <strong>Language:</strong> @Model.Profile?.Language
         </div>
     </div>
 
-    <div class="mt-3">
-        <a asp-action="Index" class="btn-cancel">Back to List</a>
-        <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn-send">Edit</a>
+    <div class="actions">
+        <button class="btn btn-primary btn-sm edit-btn" data-id="@Model.UserId">Edit</button>
+        <a class="btn btn-secondary btn-sm" href="/Administration/Index">Back</a>
     </div>
 </div>

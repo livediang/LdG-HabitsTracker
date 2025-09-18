@@ -1,21 +1,27 @@
-﻿@model IEnumerable<App.web.Models.User>
+﻿@model App.web.ViewModels.AdministrationViewModel
 
 @{
-    ViewData["Title"] = "Users List";
+    ViewData["Title"] = "Administration Users List";
 }
 
-<div class="layout-board">
-    <div class="board-left">
-        <h2>Users List</h2>
-        <div id="usersTable">
+<div class="layout-top">
+    <h2>@ViewBag.Title</h2>
+    <div class="board-top">
+        <div class="tbl-opc">
+            <input type="text" id="searchInput" name="searchTerm" placeholder="Search by name or email" data-url="@Url.Action("Index", "Administration")" />
+            <a href="@Url.Action("Register", "Administration")"><i class="bi bi-pencil-square"></i>Create New</a>
+        </div>
+    </div>
+    <div class="board-down">
+        <div class="tbl-user" id="userTableContainer">
             @await Html.PartialAsync("_UsersTable", Model)
         </div>
-        <button id="createUser" class="btn btn-success mt-2">➕ Crear Usuario</button>
+        <hr />
     </div>
+</div>
 
-    <div class="board-right">
-        <div id="actionPanel">
-            <p>Selecciona una acción de la tabla para ver más información aquí.</p>
-        </div>
+<div class="layout-down">
+    <div id="actionPanel">
+        <p>Admin your accounts here.</p>
     </div>
 </div>

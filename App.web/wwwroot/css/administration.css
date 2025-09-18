@@ -1,1 +1,225 @@
-﻿
+﻿:root {
+    --primary-color: #292D31; /*black*/
+    --secondary-color: #9E8123; /*gold*/
+    --background-color: #DAE0EC; /*white*/
+    --auxiliar-color: #9E8123; /*gold*/
+    --text-color: #292D31; /*black*/
+    --font-main: 'Segoe UI', sans-serif;
+}
+
+.layout-top {
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+    .layout-top h2 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+        padding: 4px 0;
+        color: var(--text-color);
+    }
+
+.board-top .tbl-opc {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 12px 0;
+}
+
+    .board-top .tbl-opc input {
+        flex: 1;
+        min-width: 300px;
+        max-width: 640px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--primary-color);
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .board-top .tbl-opc a {
+        min-width: 200px;
+        max-width: 320px;
+        text-align: center;
+        text-decoration: none;
+        background: var(--secondary-color);
+        border-radius: 8px;
+        color: var(--background-color);
+        padding: 8px 12px;
+        transition: var(--transition);
+    }
+
+    .board-top .tbl-opc a:hover {
+        font-weight: 600;
+        background: var(--primary-color);
+        color: var(--background-color);
+    }
+
+    .board-top .tbl-opc i {
+        margin: 0 4px;
+    }
+
+.board-down {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+    .board-down .table {
+        border-bottom: 2px solid var(--secondary-color);
+        border-radius: 4px !important;
+        background: #fff;
+    }
+
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none !important;
+    padding-left: 0;
+    margin-top: 20px;
+    gap: 0.5rem;
+}
+
+    .pagination li a {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        background: var(--secondary-color);
+        border-radius: 8px;
+        color: var(--background-color);
+        padding: 8px 12px;
+        transition: var(--transition);
+    }
+
+    .pagination li.active a {
+        font-weight: 600;
+        background: var(--primary-color);
+    }
+
+    .pagination li a:hover {
+        font-weight: 600;
+        background: var(--primary-color);
+        color: var(--background-color);
+    }
+
+.layout-down {
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+    .layout-down p {
+        font-size: 1.2rem;
+        padding: 4px 4px;
+        text-align: center;
+        color: var(--text-color);
+    }
+
+.user-details {
+    margin: 1rem auto;
+
+    padding: 1rem;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+    .user-details h2 {
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        letter-spacing: 1px;
+        color: var(--primary-color);
+    }
+
+    /* Grid flexible (2 columnas en pantallas grandes, 1 en móviles) */
+    .user-details .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+        gap: 1rem;
+    }
+
+    /* Cada item estilo tarjeta */
+    .user-details .detail-item {
+        background: var(--background-color);
+        border-bottom: 1px solid var(--secondary-color);
+        font-size: 1rem;
+        color: var(--text-color);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+        .user-details .detail-item strong {
+            
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--primary-color);
+        }
+
+        /* Roles como lista */
+        .user-details .detail-item ul {
+            margin: 0;
+            padding-left: 1.6rem;
+            text-decoration: none;
+        }
+
+    .user-details .input-field {
+        position: relative;
+        border-bottom: 1px solid var(--secondary-color);
+        font-size: 1rem;
+        color: var(--text-color);
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .user-details .input-field label {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        pointer-events: none;
+        transition: 0.4s ease;
+    }
+
+    .user-details .input-field input {
+        width: 100%;
+        height: 40px;
+        background: transparent;
+        border: none;
+        outline: none;
+        text-align: end;
+    }
+
+        .user-details .input-field input[type="checkbox"] {
+            width: 24px;
+            margin-left: calc(100% - 32px);
+        }
+
+    .user-details input:focus label, .account-box input:valid label {
+        top: 8px;
+        transform: translateY(-150%);
+        color: var(--text-color);
+        transition: 0.2s ease all;
+    }
+
+    /* Botones centrados */
+    .user-details .actions {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+        .user-details .actions .btn {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 0.4rem 8rem;
+        }
+
+
+
+
+
+

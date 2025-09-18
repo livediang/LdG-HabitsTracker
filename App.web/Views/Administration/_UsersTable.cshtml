@@ -1,29 +1,47 @@
-﻿@model IEnumerable<App.web.Models.User>
+﻿@model App.web.ViewModels.AdministrationViewModel
 
-<table class="table">
-    <thead>
+<table class="table table-hover">
+    <thead class="table-dark">
         <tr>
-            <th>Email</th>
             <th>Full Name</th>
-            <th>Active</th>
+            <th>Email</th>
+            <th>Created at</th>
+            <th>Email Confirmed</th>
             <th>Roles</th>
-            <th></th>
+            <th>Active</th>
+            <th>TimeZone</th>
+            <th>Language</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var user in Model.Users)
         {
             <tr>
-                <td>@user.Email</td>
                 <td>@user.Profile?.FullName</td>
-                <td>@user.IsActive</td>
+                <td>@user.Email</td>
+                <td>@user.CreatedAt</td>
+                <td>@(user.EmailConfirmed ? "✅" : "❌")</td>
                 <td>@string.Join(", ", user.UserRoles.Select(ur => ur.Role.Name))</td>
+                <td>@(user.IsActive ? "✅" : "❌")</td>
+                <td>@user.Profile?.TimeZone</td>
+                <td>@user.Profile?.Language</td>
                 <td>
-                    <button class="btn btn-info btn-sm details-btn" data-id="@user.UserId">Details</button>
-                    <button class="btn btn-primary btn-sm edit-btn" data-id="@user.UserId">Edit</button>
-                    <button class="btn btn-danger btn-sm delete-btn" data-id="@user.UserId">Delete</button>
+                    <button class="btn btn-success btn-sm details-btn" data-id="@user.UserId"><i class="bi bi-search"></i></button>
+                    <button class="btn btn-primary btn-sm edit-btn" data-id="@user.UserId"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="@user.UserId"><i class="bi bi-trash"></i></button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<nav aria-label="navigation">
+    <ul class="pagination">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="@(i == Model.CurrentPage ? "active" : "")">
+                <a class="" href="@Url.Action("Index", "Administration", new { searchTerm = Model.SearchTerm, page = i })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

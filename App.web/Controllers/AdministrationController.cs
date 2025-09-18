@@ -1,8 +1,11 @@
 ﻿using App.web.Data;
 using App.web.Models;
+using App.web.Services;
+using App.web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace App.web.Controllers
 {
@@ -15,17 +18,55 @@ namespace App.web.Controllers
             _context = context;
         }
 
+        [Authorize]
+        private User? GetCurrentUser()
+        {
+            var idUser = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (idUser == null) return null;
+
+            Guid idUserPortal = Guid.Parse(idUser.Value);
+
+            return _context.Users.Include(u => u.UserRoles).FirstOrDefault(u => u.UserId == idUserPortal);
+        }
+
         // GET: Users
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm, int page = 1, int pageSize = 4)
         {
-            var users = await _context.Users
+            var query = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(u => u.Email.Contains(searchTerm) || u.Profile.FullName.Contains(searchTerm));
+            }
+
+            int totalRecords = query.Count();
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            var users = await query
                 .Include(u => u.Profile)
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
+                .OrderBy(u => u.UserId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return View(users);
+            var viewModel = new AdministrationViewModel
+            {
+                Users = users,
+                SearchTerm = searchTerm,
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_UsersTable", viewModel);
+            }
+
+            return View(viewModel);
         }
 
         // GET: Users/Details/5
@@ -68,9 +109,34 @@ namespace App.web.Controllers
             {
                 try
                 {
-                    _context.Update(model);
+                    var userDb = await _context.Users
+                        .Include(u => u.Profile)
+                        .FirstOrDefaultAsync(u => u.UserId == id);
+
+                    if (userDb == null) return NotFound();
+
+                    userDb.Email = model.Email;
+                    userDb.IsActive = model.IsActive;
+                    userDb.UpdatedAt = DateTime.UtcNow;
+
+                    if (userDb.Profile != null)
+                    {
+                        userDb.Profile.FullName = model.Profile?.FullName;
+                    }
+
                     await _context.SaveChangesAsync();
-                    return PartialView("_UsersTable", nameof(Index));
+
+                    var users = await _context.Users
+                        .Include(u => u.Profile)
+                        .Include(u => u.UserRoles)
+                            .ThenInclude(ur => ur.Role)
+                        .ToListAsync();
+
+                    return Json(new
+                    {
+                        success = true,
+                        html = await this.RenderViewAsync("_UsersTable", users, true)
+                    });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -81,7 +147,11 @@ namespace App.web.Controllers
                 }
             }
 
-            return PartialView("_UsersEdit", model);
+            return Json(new
+            {
+                success = false,
+                html = await this.RenderViewAsync("_UsersEdit", model, true)
+            });
         }
 
         // GET: Users/Delete/{id}
@@ -109,7 +179,7 @@ namespace App.web.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return PartialView("_UsersTable", nameof(Index));
+            return Ok( new { success = true });
         }
     }
 }
