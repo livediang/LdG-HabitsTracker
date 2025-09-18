@@ -47,9 +47,20 @@ $(document).on("click", ".delete-btn", function () {
 
 $(document).on("submit", "#deleteForm", function (e) {
     e.preventDefault();
-    $.post($(this).attr("action"), $(this).serialize(), function (tableHtml) {
-        $("#usersTable").html(tableHtml.html);
-        $("#actionPanel").html("<p>User Delete.</p>");
+    var form = $(this);
+
+    $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: form.serialize(),
+        success: function (res) {
+            if (res.success) {
+                $("#usersTable").html(res.html);
+                $("#actionPanel").html("<p class='text-success'>✅ User Deleted.</p>");
+            } else {
+                $("#actionPanel").html("<p class='text-danger'>❌ Error deleting user.</p>");
+            }
+        }
     });
 });
 

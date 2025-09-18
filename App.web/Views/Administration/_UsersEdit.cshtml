@@ -1,7 +1,8 @@
-﻿@model App.web.Models.User
+﻿@model App.web.ViewModels.UserEditViewModel
 
 @{
     ViewData["Title"] = "Edit User";
+    var roles = ViewBag.AllRoles as List<App.web.Models.Role>;
 }
 
 <div class="user-details">
@@ -11,18 +12,35 @@
         <h2>@ViewData["Title"]</h2>
 
         <div class="input-field">
+            <label asp-for="Email"></label>
             <input asp-for="Email" type="email" required />
-            <label>Email</label>
         </div>
 
         <div class="input-field">
-            <input asp-for="Profile.FullName" type="text" required />
-            <label>Full Name</label>
+            <label asp-for="FullName">Full Name</label>
+            <input asp-for="FullName" type="text" required />
         </div>
 
         <div class="input-field">
+            <label asp-for="IsActive">Active</label>
             <input asp-for="IsActive" type="checkbox" />
-            <label>Active</label>       
+        </div>
+
+        <div class="input-field">
+            <label>Roles</label>
+        </div>
+        <div class="roles-list">
+            @foreach (var role in roles)
+            {
+                var isChecked = Model.SelectedRoles.Contains(role.RoleId);
+                <div class="form-check">
+                    <input type="checkbox"
+                           name="SelectedRoles"
+                           value="@role.RoleId"
+                           @(isChecked ? "checked" : "") />
+                    <label>@role.Name</label>
+                </div>
+            }
         </div>
 
         <div class="actions">

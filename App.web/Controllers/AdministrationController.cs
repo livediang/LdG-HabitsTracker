@@ -90,18 +90,30 @@ namespace App.web.Controllers
         {
             var user = await _context.Users
                 .Include(u => u.Profile)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
-            if (user == null)
-                return NotFound();
+            if (user == null) return NotFound();
 
-            return PartialView("_UsersEdit", user);
+            var vm = new UserEditViewModel
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                FullName = user.Profile?.FullName,
+                SelectedRoles = user.UserRoles.Select(ur => ur.RoleId).ToList()
+            };
+
+            ViewBag.AllRoles = await _context.Roles.ToListAsync();
+
+            return PartialView("_UsersEdit", vm);
         }
 
         // POST: Users/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, User model)
+        public async Task<IActionResult> Edit(Guid id, UserEditViewModel model)
         {
             if (id != model.UserId) return BadRequest();
 
@@ -111,6 +123,7 @@ namespace App.web.Controllers
                 {
                     var userDb = await _context.Users
                         .Include(u => u.Profile)
+                        .Include(u => u.UserRoles)
                         .FirstOrDefaultAsync(u => u.UserId == id);
 
                     if (userDb == null) return NotFound();
@@ -120,8 +133,26 @@ namespace App.web.Controllers
                     userDb.UpdatedAt = DateTime.UtcNow;
 
                     if (userDb.Profile != null)
+                        userDb.Profile.FullName = model.FullName;
+                    else
+                        userDb.Profile = new UserProfile
+                        {
+                            ProfileId = Guid.NewGuid(),
+                            UserId = userDb.UserId,
+                            FullName = model.FullName
+                        };
+
+                    userDb.UserRoles.Clear();
+                    if (model.SelectedRoles != null && model.SelectedRoles.Any())
                     {
-                        userDb.Profile.FullName = model.Profile?.FullName;
+                        foreach (var roleId in model.SelectedRoles)
+                        {
+                            userDb.UserRoles.Add(new UserRole
+                            {
+                                UserId = userDb.UserId,
+                                RoleId = roleId
+                            });
+                        }
                     }
 
                     await _context.SaveChangesAsync();
@@ -132,10 +163,18 @@ namespace App.web.Controllers
                             .ThenInclude(ur => ur.Role)
                         .ToListAsync();
 
+                    var viewModel = new AdministrationViewModel
+                    {
+                        Users = users,
+                        SearchTerm = "",
+                        CurrentPage = 1,
+                        TotalPages = 4
+                    };
+
                     return Json(new
                     {
                         success = true,
-                        html = await this.RenderViewAsync("_UsersTable", users, true)
+                        html = await this.RenderViewAsync("_UsersTable", viewModel, true)
                     });
                 }
                 catch (DbUpdateConcurrencyException)
@@ -146,6 +185,8 @@ namespace App.web.Controllers
                     throw;
                 }
             }
+
+            ViewBag.AllRoles = await _context.Roles.ToListAsync();
 
             return Json(new
             {
@@ -179,7 +220,26 @@ namespace App.web.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return Ok( new { success = true });
+            var users = await _context.Users
+                .Include(u => u.Profile)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .OrderBy(u => u.UserId)
+                .ToListAsync();
+
+            var viewModel = new AdministrationViewModel
+            {
+                Users = users,
+                SearchTerm = "",
+                CurrentPage = 1,
+                TotalPages = 4
+            };
+
+            return Json(new
+            {
+                success = true,
+                html = await this.RenderViewAsync("_UsersTable", viewModel, true)
+            });
         }
     }
 }
