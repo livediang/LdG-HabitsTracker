@@ -12,13 +12,18 @@
         <h2>@ViewData["Title"]</h2>
 
         <div class="input-field">
+            <label asp-for="FullName">Full Name</label>
+            <input asp-for="FullName" type="text" required />
+        </div>
+
+        <div class="input-field">
             <label asp-for="Email"></label>
             <input asp-for="Email" type="email" required />
         </div>
 
         <div class="input-field">
-            <label asp-for="FullName">Full Name</label>
-            <input asp-for="FullName" type="text" required />
+            <label asp-for="EmailConfirmed">Email Confirmed</label>
+            <input asp-for="EmailConfirmed" type="checkbox" />
         </div>
 
         <div class="input-field">
@@ -27,20 +32,35 @@
         </div>
 
         <div class="input-field">
-            <label>Roles</label>
+            <label asp-for="PhotoUrl">Photo Url</label>
+            <input asp-for="PhotoUrl" type="text" required />
         </div>
-        <div class="roles-list">
-            @foreach (var role in roles)
-            {
-                var isChecked = Model.SelectedRoles.Contains(role.RoleId);
-                <div class="form-check">
-                    <input type="checkbox"
-                           name="SelectedRoles"
-                           value="@role.RoleId"
-                           @(isChecked ? "checked" : "") />
-                    <label>@role.Name</label>
-                </div>
-            }
+
+        <div class="input-field">
+            <label asp-for="TimeZone">TimeZone</label>
+            <input asp-for="TimeZone" type="text" required />
+        </div>
+
+        <div class="input-field">
+            <label asp-for="Language">Language</label>
+            <input asp-for="Language" type="text" required />
+        </div>
+
+        <div class="input-field">
+            <label>Roles</label>
+            <div class="list">
+                @foreach (var role in roles)
+                {
+                    var isChecked = Model.SelectedRoles.Contains(role.RoleId);
+                    <div class="form-check">
+                        <p class="lbl-opc">@role.Name</p>
+                        <input type="checkbox"
+                               name="SelectedRoles"
+                               value="@role.RoleId"
+                               @(isChecked ? "checked" : "") />
+                    </div>
+                }
+            </div>
         </div>
 
         <div class="actions">

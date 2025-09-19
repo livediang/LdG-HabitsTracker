@@ -42,6 +42,11 @@ namespace App.web.Services
                 .FirstOrDefaultAsync(u => u.UserId == id && u.Email.ToLower() == normalizedEmail);
         }
 
+        public async Task<Role> FindByNameRole(string autoRole)
+        {
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == autoRole);
+        }
+
         public async Task ConfirmEmail(User user)
         {
             if (user == null) return;
@@ -64,6 +69,14 @@ namespace App.web.Services
             if (profile == null) return;
 
             await _context.UserProfiles.AddAsync(profile);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddUserRole(UserRole userRole)
+        {
+            if (userRole == null) return;
+
+            await _context.UserRoles.AddAsync(userRole);
             await _context.SaveChangesAsync();
         }
 

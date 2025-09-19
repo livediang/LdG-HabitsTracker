@@ -64,6 +64,35 @@ $(document).on("submit", "#deleteForm", function (e) {
     });
 });
 
+// Crear
+$(document).on("click", ".create-btn", function () {
+    let id = $(this).data("id");
+    $.get("/Administration/Create/" + id, function (html) {
+        $("#actionPanel").html(html);
+    });
+});
+
+// Guardar Usuario
+$(document).on("submit", "#createForm", function (e) {
+    e.preventDefault();
+
+    var form = $(this);
+
+    $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: form.serialize(),
+        success: function (res) {
+            if (res.success) {
+                $("#usersTable").html(res.html);
+                $("#actionPanel").html("<p class='text-success'>✅ User Registered.</p>");
+            } else {
+                $("#actionPanel").html(res.html);
+            }
+        }
+    });
+});
+
 /* ==== Search Text ==== */
 
 let searchInput = document.getElementById('searchInput');

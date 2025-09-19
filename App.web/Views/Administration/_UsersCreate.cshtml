@@ -1,0 +1,39 @@
+﻿@model App.web.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Create User";
+    var roles = ViewBag.AllRoles as List<App.web.Models.Role>;
+}
+
+<div class="user-details">
+    <form asp-action="Create" asp-controller="Administration" method="post" id="createForm">
+        <h2>@ViewData["Title"]</h2>
+
+        <div class="input-field">
+            <input asp-for="FullName" required placeholder="Enter your full name" />
+            <label asp-for="FullName"></label>
+        </div>
+
+        <div class="input-field">
+            <input asp-for="Email" type="email" required placeholder="example@email.com" />
+            <label asp-for="Email"></label>
+        </div>
+
+        <div class="input-field">
+            <input asp-for="Password" type="password" required placeholder="********" />
+            <label asp-for="Password"></label>
+        </div>
+
+        <div class="input-field">
+            <input asp-for="ConfirmPassword" type="password" required placeholder="********" />
+            <label asp-for="ConfirmPassword"></label>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-success btn-sm">Create User</button>
+            <a class="btn btn-secondary btn-sm" href="/Administration/Index">Back</a>
+        </div>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </form>
+</div>

@@ -198,6 +198,25 @@
             margin-left: calc(100% - 32px);
         }
 
+        .user-details .input-field .form-check {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+        }
+
+            .user-details .input-field .form-check .lbl-opc {
+                margin-left: calc(100% - 200px);
+                cursor: pointer;
+                white-space: nowrap;
+                margin-bottom: 8px;
+                font-size: 1rem;
+            }
+
+            .user-details .input-field .form-check input[type="checkbox"] {
+                width: 24px;
+                margin: 0 8px;
+            }
+
     .user-details input:focus label, .account-box input:valid label {
         top: 8px;
         transform: translateY(-150%);

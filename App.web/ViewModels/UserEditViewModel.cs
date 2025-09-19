@@ -9,10 +9,13 @@ namespace App.web.ViewModels
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        public bool IsActive { get; set; }
-
         // Perfil
         public string FullName { get; set; }
+        public bool IsActive { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public string PhotoUrl { get; set; }
+        public string TimeZone { get; set; }
+        public string Language { get; set; }
 
         // Roles seleccionados
         public List<Guid> SelectedRoles { get; set; } = new();

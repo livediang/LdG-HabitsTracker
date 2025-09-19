@@ -1,6 +1,7 @@
 ﻿using App.web.Data;
 using App.web.Models;
 using App.web.Services;
+using App.web.Services.Interfaces;
 using App.web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace App.web.Controllers
     public class AdministrationController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAuthService _authService;
 
-        public AdministrationController(ApplicationDbContext context)
+        public AdministrationController(ApplicationDbContext context, IAuthService authService)
         {
             _context = context;
+            _authService = authService;
         }
 
         [Authorize]
@@ -101,7 +104,11 @@ namespace App.web.Controllers
                 UserId = user.UserId,
                 Email = user.Email,
                 IsActive = user.IsActive,
+                EmailConfirmed = user.EmailConfirmed,
                 FullName = user.Profile?.FullName,
+                PhotoUrl = user.Profile?.PhotoUrl,
+                TimeZone = user.Profile?.TimeZone,
+                Language = user.Profile?.Language,
                 SelectedRoles = user.UserRoles.Select(ur => ur.RoleId).ToList()
             };
 
@@ -130,10 +137,16 @@ namespace App.web.Controllers
 
                     userDb.Email = model.Email;
                     userDb.IsActive = model.IsActive;
+                    userDb.EmailConfirmed = model.EmailConfirmed;
                     userDb.UpdatedAt = DateTime.UtcNow;
 
                     if (userDb.Profile != null)
+                    {
                         userDb.Profile.FullName = model.FullName;
+                        userDb.Profile.PhotoUrl = model.PhotoUrl;
+                        userDb.Profile.TimeZone = model.TimeZone;
+                        userDb.Profile.Language = model.Language;
+                    }
                     else
                         userDb.Profile = new UserProfile
                         {
@@ -168,7 +181,7 @@ namespace App.web.Controllers
                         Users = users,
                         SearchTerm = "",
                         CurrentPage = 1,
-                        TotalPages = 4
+                        TotalPages = 1
                     };
 
                     return Json(new
@@ -232,13 +245,60 @@ namespace App.web.Controllers
                 Users = users,
                 SearchTerm = "",
                 CurrentPage = 1,
-                TotalPages = 4
+                TotalPages = 1
             };
 
             return Json(new
             {
                 success = true,
                 html = await this.RenderViewAsync("_UsersTable", viewModel, true)
+            });
+        }
+
+        // GET: Users/Create/{id}
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.AllRoles = await _context.Roles.ToListAsync();
+
+            return PartialView("_UsersCreate");
+        }
+
+        // POST: Users/Create/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var register = await _authService.RegisterAsync(model.FullName, model.Email, model.Password);
+
+                var users = await _context.Users
+                    .Include(u => u.Profile)
+                    .Include(u => u.UserRoles)
+                        .ThenInclude(ur => ur.Role)
+                    .ToListAsync();
+
+                var viewModel = new AdministrationViewModel
+                {
+                    Users = users,
+                    SearchTerm = "",
+                    CurrentPage = 1,
+                    TotalPages = 1
+                };
+
+                return Json(new
+                {
+                    success = true,
+                    html = await this.RenderViewAsync("_UsersTable", viewModel, true)
+                });
+            }
+
+            ViewBag.AllRoles = await _context.Roles.ToListAsync();
+
+            return Json(new
+            {
+                success = false,
+                html = await this.RenderViewAsync("_UsersCreate", model, true)
             });
         }
     }

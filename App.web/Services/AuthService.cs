@@ -53,6 +53,16 @@ namespace App.web.Services
 
             await _userService.AddProfile(profile);
 
+            var autoRole = await _userService.FindByNameRole("User");
+
+            var userRole = new UserRole
+            {
+                UserId = user.UserId,
+                RoleId = autoRole.RoleId
+            };
+
+            await _userService.AddUserRole(userRole);
+
             return await Task.FromResult(new AuthResult
             {
                 Success = true,
